@@ -1,0 +1,13 @@
+<mat-toolbar color="primary">
+  <div class="nav-bar-container">
+    <div>
+      WhiteListApp
+    </div>
+    <div>
+      <button mat-raised-button *ngIf="!auth.isAuth()" routerLink="/login">Login</button>
+      <button mat-raised-button *ngIf="auth.isAuth()" routerLink="/login" (click)="auth.logOut()">Logout</button>
+      <button class="white-list-btn" mat-raised-button routerLink="/white-list">white-list</button>
+    </div>
+  </div>
+
+</mat-toolbar>

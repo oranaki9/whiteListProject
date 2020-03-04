@@ -1,0 +1,20 @@
+<form [formGroup]="loginForm" (submit)="onUserLogin()">
+  <mat-form-field>
+    <input matInput formControlName="userName" placeholder="Enter user name" class="userName__input" />
+
+    <mat-error class="required-username-err__msg" *ngIf="userName.errors?.required">This field required</mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput formControlName="password" placeholder="Enter password" type="password" class="password__input" />
+    <mat-error *ngIf="password.invalid">This field required</mat-error>
+  </mat-form-field>
+
+
+
+  <div class="login-create-profile__container">
+    <button [disabled]="loginForm.invalid" type="submit" class="login__btn" mat-raised-button color="primary">
+      Login
+    </button>
+
+  </div>
+</form>
