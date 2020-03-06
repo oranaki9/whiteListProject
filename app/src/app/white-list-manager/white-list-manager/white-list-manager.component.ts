@@ -17,6 +17,7 @@ export class WhiteListManagerComponent implements OnInit, OnDestroy {
   public userRole = "";
   public searchTerm = "";
   private destroy$: Subject<boolean> = new Subject<boolean>();
+  public selectedFile: { fileName: string, filePath: string, fileData: any, type: string };
 
   constructor(private whiteList: WhiteListService, private auth: AuthService, ) { }
   ngOnDestroy(): void {
@@ -40,12 +41,31 @@ export class WhiteListManagerComponent implements OnInit, OnDestroy {
       this.filePreview = file;
     }
   }
+  onFileClicked(file: IFile) {
+
+    this.selectedFile = {
+      fileName: file.fileName,
+      filePath: file.path,
+      fileData: null,
+      type: file.type
+    };
+    if (!file.type.includes("image")) {
+      this.whiteList.queryToFile(file.fileName).pipe(takeUntil(this.destroy$)).subscribe(fileData => {
+        this.selectedFile = {
+          ...this.selectedFile,
+          fileData: fileData.data,
+        };
+      });
+    }
+  }
   sendFile() {
     if (!this.filePreview) {
       return;
     }
-    this.whiteList.addFile(this.filePreview).pipe(takeUntil(this.destroy$)).subscribe((data: ApiResponse) => {
-      this.files.push(data.data);
+    this.whiteList.addFile(this.filePreview).pipe(takeUntil(this.destroy$)).subscribe((result: ApiResponse) => {
+      console.log(result.data);
+
+      this.files.push(result.data);
     });
   }
 }

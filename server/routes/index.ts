@@ -15,24 +15,22 @@ export class Routes {
             let error: Error = new Error("Cannot save file.");
             const newFileHash: Error | EncryptedData = Encryption.encrypt(JSON.stringify(file));
             const url: string = req.protocol + "://" + req.get("host");
-            const filePath: string = url + "/server/uploads/" + file.originalname;
+            const filePath: string = url + "/files/" + file.originalname;
             req.body.filePath = filePath;
             const savedFile: IFile[] = await fileModel.find({ path: filePath });
 
-            const foundInDb = this.foundInDb(savedFile, newFileHash);
-            const signatureMatch = this.signatureMatch(savedFile, newFileHash);
-
-            if (!foundInDb || signatureMatch) {
+            const verifiyFile = this.verifiyFile(savedFile, newFileHash);
+            if (verifiyFile && file) {
                 req.body.newFile = {
                     signature: newFileHash,
                     path: filePath,
                     type: file.mimetype,
-                    name: file.originalname
+                    fileName: file.originalname
                 };
 
                 error = null;
-
             }
+
             callBack(error, 'uploads')
         },
         filename: (req, file, callBack) => {
@@ -40,22 +38,16 @@ export class Routes {
         },
 
     });
-    private signatureMatch(files: IFile[], newFileHash: EncryptedData | Error): boolean {
 
-
-        if (files.length) {
-            if (JSON.stringify(newFileHash) === JSON.stringify(files[0].signature)) {
-                return true;
-            }
+    private verifiyFile(files: IFile[], newFileHash: EncryptedData | Error): boolean {
+        if (files.length === 0) {
+            return true;
+        }
+        if (JSON.stringify(newFileHash) === JSON.stringify(files[0].signature)) {
+            return true;
         }
 
         return false;
-    }
-    private foundInDb(files: IFile[], newFileHash: EncryptedData | Error): boolean {
-        if (files.length === 0) {
-            return false;
-        }
-        return true;
     }
     private upload = multer({ storage: this.storage })
     private _router = express.Router();
@@ -72,6 +64,7 @@ export class Routes {
     setWhiteListRoutes() {
         this._router.post("/api/white-list", checkAdmin, this.upload.single("file"), this._whiteList.addFile);
         this._router.get("/api/white-list", checkAuth, this._whiteList.getFiles);
+        this._router.get("/api/white-list/:fileName", checkAuth, this._whiteList.getFile);
     }
     setAuthRoutes() {
         this._router.post("/log-in", this._auth.login);

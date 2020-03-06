@@ -1,10 +1,9 @@
 import { Encryption } from './hash/encryption';
-import * as express from "express";
+import * as  express from "express";
 import { Routes } from './routes';
 import * as bodyParser from "body-parser";
 import * as path from "path";
 import * as fs from "fs";
-//import { mongoInstance } from "./database/mongoose-connection";
 class App {
     public app: express.Application;
     public server: any;
@@ -15,15 +14,17 @@ class App {
         this.setServer();
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: false }));
+        this.app.use("/files", express.static(path.join(__dirname, "/uploads")));
+          this.setServerHomePage();
         this.routes = new Routes();
         this.app.all("/*", this.routes.router);
         this.setUploadFolder();
         Encryption.encrypt("fileName");
     }
     setUploadFolder() {
-        const logsDir: string = path.join(__dirname, 'uploads');
-        if (!fs.existsSync(logsDir)) {
-            fs.mkdirSync(logsDir)
+        const uploadsDir: string = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir)
         }
     }
     setServer() {
@@ -33,6 +34,12 @@ class App {
 
         })
     }
+    setServerHomePage() {
+        this.app.get("/", (req, res) => {
+            res.send("<h1>Wellcome to White List Server</h1>");
+        })
+    }
+
     setCors() {
         // allows all origins!
         this.app.use((req: express.Request, res: express.Response, next: Function) => {

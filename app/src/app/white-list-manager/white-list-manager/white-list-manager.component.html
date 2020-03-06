@@ -1,33 +1,44 @@
-<div class="flex-container">
-  <div>
-    <h1>White List Manager</h1>
-    <div *ngIf="userRole==='admin'">
-      <input d type="file" (change)="onFilePicked($event)">
-      <button color="accent" mat-raised-button (click)="sendFile()">Upload file</button>
-    </div>
-
-
-    <mat-form-field>
-      <input matInput placeholder="Search file" [(ngModel)]="searchTerm" />
-
-    </mat-form-field>
-    <h3 mat-subheader>DB White list Files</h3>
-
-    <div *ngIf="files" class="files-items-container">
-      <div *ngFor="let file of files|searchFilter:searchTerm">
-        <div class="file-item-container">
-          <mat-icon mat-list-icon>insert_drive_file</mat-icon>
-          <h4 mat-line>{{file.name}}</h4>
-        </div>
-
+<div class="page-flex-container">
+  <div class="flex-container">
+    <div>
+      <h1>White List Manager</h1>
+      <div *ngIf="userRole==='admin'">
+        <input d type="file" (change)="onFilePicked($event)">
+        <button color="accent" mat-raised-button (click)="sendFile()">Upload file</button>
       </div>
+
+
+      <mat-form-field>
+        <input matInput placeholder="Search file" [(ngModel)]="searchTerm" />
+
+      </mat-form-field>
+      <h3 mat-subheader>DB White list Files</h3>
+
+      <div *ngIf="files" class="files-items-container">
+        <div *ngFor="let file of files|searchFilter:searchTerm">
+          <div class="file-item-container">
+
+            <mat-icon mat-list-icon *ngIf="file.type.includes('image')">image</mat-icon>
+            <mat-icon mat-list-icon *ngIf="!file.type.includes('image')">insert_drive_file</mat-icon>
+            <h4 mat-line (click)="onFileClicked(file)">{{file.fileName}}</h4>
+          </div>
+
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
     </div>
+  </div>
+  <div>
 
-
-
-    <mat-divider></mat-divider>
-
+    <ng-template [ngIf]="selectedFile?.type.includes('image')" [ngIfThen]="imgPreview" [ngIfElse]="filesPreview">
+    </ng-template>
+    <ng-template #filesPreview>
+      <div class="display-file">{{selectedFile?.fileData}}</div>
+    </ng-template>
+    <ng-template #imgPreview>
+      <img [src]="selectedFile.filePath">
+    </ng-template>
 
   </div>
-
 </div>

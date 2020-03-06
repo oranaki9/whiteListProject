@@ -18,4 +18,8 @@ export class WhiteListService {
   getFiles(): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(`${this.API_URL}/api/white-list`);
   }
+  queryToFile(fileName: string): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.API_URL}/api/white-list/${fileName}`);
+  }
+
 }

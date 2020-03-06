@@ -11,7 +11,7 @@ export class SearchFilterPipe implements PipeTransform {
     if (!searchText) return files;
     const searchTerm = searchText.toLowerCase();
     return files.filter((file: IFile) => {
-      return file.name.toLowerCase().includes(searchTerm) || file.path.toLowerCase().includes(searchTerm);
+      return file.fileName.toLowerCase().includes(searchTerm) || file.path.toLowerCase().includes(searchTerm);
     });
   }
 
